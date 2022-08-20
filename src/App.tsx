@@ -1,24 +1,31 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
 
+interface Goal {
+  id: number;
+  text: string;
+}
+
 function App() {
+  const [goals, setGoals] = React.useState<Goal[]>([
+    { id: 1, text: "Set goals" },
+  ]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Goals</h1>
+      <ul>
+        {goals.map((goal) => (
+          <li key={goal.id}>{goal.text}</li>
+        ))}
+      </ul>
+      <button
+        onClick={() =>
+          setGoals([...goals, { id: goals.length + 1, text: "New goal" }])
+        }
+      >
+        Add
+      </button>
     </div>
   );
 }
