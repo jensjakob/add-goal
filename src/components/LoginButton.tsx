@@ -7,7 +7,7 @@ interface Props {
 
 export const x: React.FC<Props> = ({ className, thing }) => {
   return (
-    <Dialog className={className} thing={thing}>
+    <Dialog className={className} thing="Login">
       {/* <form>
         <input
           type="email"
