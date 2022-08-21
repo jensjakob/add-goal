@@ -1,5 +1,8 @@
 import React from "react";
 import "./App.css";
+import LoginButton from "./components/LoginButton";
+
+import styles from "./App.module.css";
 
 interface Goal {
   id: number;
@@ -26,6 +29,8 @@ function App() {
       >
         Add
       </button>
+
+      <LoginButton className={styles.open} thing="Login"></LoginButton>
     </div>
   );
 }
