@@ -24,11 +24,17 @@ const firebaseConfig = {
   appId: "1:673617995128:web:df1012a43d0ca65482d48d",
 };
 
-interface Goal {
+interface IGoal {
   id: string;
   name: string;
   label: string;
   sum?: number;
+}
+
+interface IEvent {
+  goal: string;
+  name: string;
+  timestamp: Date;
 }
 
 let user = "39Z2Nsdjj4Vh8xvg9cJr";
@@ -37,7 +43,26 @@ function App() {
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const [goals, setGoals] = useState<Goal[] | null>(null);
+  const [goals, setGoals] = useState<IGoal[] | null>(null);
+
+  // useSate(name, default) {
+  //   name = default
+  //   public const "set" + firstLetterUpper(name) = default;
+  // }
+
+  async function addEvent(name: string, goal: string) {
+    try {
+      const data: IEvent = {
+        goal,
+        name,
+        timestamp: new Date(),
+      };
+      await addDoc(collection(db, `users/${user}/events`), data);
+      // console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  }
 
   async function handleUp(docId: string, sum: number = 0) {
     const docRef = doc(db, "users", `${user}/goals/${docId}`);
@@ -45,6 +70,8 @@ function App() {
     await updateDoc(docRef, {
       sum: sum + 1,
     });
+
+    addEvent("up", docId);
   }
 
   async function handleDown(docId: string, sum: number = 0) {
@@ -53,6 +80,8 @@ function App() {
     await updateDoc(docRef, {
       sum: sum - 1,
     });
+
+    addEvent("down", docId);
   }
 
   async function handleClick() {
