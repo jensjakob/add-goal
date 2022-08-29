@@ -64,6 +64,14 @@ function App() {
     }
   }
 
+  async function updateSum(docId: string, sum: number) {
+    const docRef = doc(db, "users", `${user}/goals/${docId}`);
+
+    await updateDoc(docRef, {
+      sum: sum,
+    });
+  }
+
   async function handleUp(docId: string, sum: number = 0) {
     const docRef = doc(db, "users", `${user}/goals/${docId}`);
 
@@ -83,6 +91,11 @@ function App() {
 
     addEvent("down", docId);
   }
+
+  // async function handleDelete(docId: string) {
+  //   await deleteDoc(doc(db, `users/${user}/goals`, docId));
+  //   // Events is not deleted
+  // }
 
   async function handleClick() {
     let defaultGoals = [
@@ -140,6 +153,37 @@ function App() {
 
       setGoals(data);
     });
+
+    const collectionRefEvents = collection(db, "users", `${user}/events`);
+    const qEvents = query(collectionRefEvents);
+
+    onSnapshot(qEvents, (snapshot) => {
+      const data = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          goal: doc.data().goal,
+          name: doc.data().name,
+          timestamp: doc.data().timestamp,
+        };
+      });
+
+      data.sort((a, b) => (a.goal > b.goal ? 1 : -1));
+
+      let goalSum = 0;
+      data.forEach((item, index) => {
+        goalSum += item.name === "up" ? 1 : -1;
+
+        if (data[index + 1]?.goal !== item.goal) {
+          // Save the data
+          updateSum(item.goal, goalSum);
+          console.log("log:", item.goal, goalSum);
+
+          // Reset
+          goalSum = 0;
+        }
+      });
+    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -153,6 +197,7 @@ function App() {
             <button onClick={() => handleDown(goal.id, goal.sum)}>👎</button>{" "}
             {goal?.sum}{" "}
             <button onClick={() => handleUp(goal.id, goal.sum)}>👍</button>
+            {/* <button onClick={() => handleDelete(goal.id)}>Delete</button> */}
           </li>
         ))}
       </ul>
