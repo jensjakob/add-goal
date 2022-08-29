@@ -66,11 +66,6 @@ function App() {
 
   const [goals, setGoals] = useState<IGoal[] | null>(null);
 
-  // useSate(name, default) {
-  //   name = default
-  //   public const "set" + firstLetterUpper(name) = default;
-  // }
-
   async function addEvent(name: string, goal: string) {
     try {
       const data: IEvent = {
