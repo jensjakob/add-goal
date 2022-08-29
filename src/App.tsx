@@ -206,6 +206,7 @@ function App() {
 
   return (
     <div className="App">
+      <LoginButton />
       <h1>Goals</h1>
       <ul>
         {goals?.map((goal) => (
@@ -219,7 +220,6 @@ function App() {
         ))}
       </ul>
       <button onClick={handleClick}>Add all default goals</button>
-      <LoginButton />
     </div>
   );
 }
