@@ -12,6 +12,7 @@
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "firebase": "^9.9.3",
+    "mixpanel-browser": "^2.45.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
@@ -43,6 +44,7 @@
     ]
   },
   "devDependencies": {
-    "@playwright/test": "^1.25.0"
+    "@playwright/test": "^1.25.0",
+    "@types/mixpanel-browser": "^2.38.0"
   }
 }

@@ -9,6 +9,7 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+import mixpanel from "mixpanel-browser";
 
 import "./App.css";
 import LoginButton from "./components/LoginButton";
@@ -23,6 +24,26 @@ const firebaseConfig = {
   messagingSenderId: "673617995128",
   appId: "1:673617995128:web:df1012a43d0ca65482d48d",
 };
+
+// Enabling the debug mode flag is useful during implementation,
+// but it's recommended you remove it for production
+mixpanel.init("424af2fd1c1c4e8504092eac6eab65b0", {
+  api_host: "https://api-eu.mixpanel.com",
+  property_blacklist: [
+    "$browser",
+    "$browser_version",
+    "$initial_referrer",
+    "$initial_referring_domain",
+    "$lib_version",
+    "$os",
+    "$screen_height",
+    "$screen_width",
+    "mp_lib",
+  ],
+  ip: false,
+  debug: true,
+});
+mixpanel.track("init");
 
 interface IGoal {
   id: string;
@@ -80,6 +101,7 @@ function App() {
     });
 
     addEvent("up", docId);
+    mixpanel.track("like");
   }
 
   async function handleDown(docId: string, sum: number = 0) {
