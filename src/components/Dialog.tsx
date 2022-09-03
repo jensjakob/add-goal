@@ -3,14 +3,14 @@ import styles from "./Dialog.module.css";
 
 interface Props {
   className?: string;
-  thing?: any;
+  cta?: any;
   children: React.ReactNode;
 }
 
-export const Dialog: React.FC<Props> = ({ className, thing, children }) => {
+export const Dialog: React.FC<Props> = ({ className, cta, children }) => {
   return (
     <Primitive.Root>
-      <Primitive.Trigger className={className}>{thing}</Primitive.Trigger>
+      <Primitive.Trigger className={className}>{cta}</Primitive.Trigger>
       <Primitive.Portal>
         <Primitive.Overlay />
         <Primitive.Content className={styles.portal}>

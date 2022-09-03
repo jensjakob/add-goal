@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -13,6 +13,7 @@ import mixpanel from "mixpanel-browser";
 
 import "./App.css";
 import LoginButton from "./components/LoginButton";
+import { MyContext } from "./context/MyContext";
 
 // import styles from "./App.module.css";
 
@@ -71,13 +72,21 @@ interface IEvent {
   timestamp: Date;
 }
 
-let user = "39Z2Nsdjj4Vh8xvg9cJr";
+// let user = "39Z2Nsdjj4Vh8xvg9cJr";
 
-function App() {
+const App = () => {
+  const { state } = useContext(MyContext);
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
   const [goals, setGoals] = useState<IGoal[] | null>(null);
+
+  let user: string | null = null;
+
+  if (state?.user) {
+    user = state.user;
+  }
 
   async function addEvent(name: string, goal: string) {
     try {
@@ -168,58 +177,66 @@ function App() {
   }
 
   useEffect(() => {
-    const collectionRef = collection(db, "users", `${user}/goals`);
-    const q = query(collectionRef);
+    if (state?.user) {
+      const collectionRef = collection(db, "users", `${user}/goals`);
+      const q = query(collectionRef);
 
-    onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          name: doc.data().name,
-          label: doc.data().label,
-          sum: doc.data().sum,
-        };
+      onSnapshot(q, (snapshot) => {
+        const data = snapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            name: doc.data().name,
+            label: doc.data().label,
+            sum: doc.data().sum,
+          };
+        });
+
+        setGoals(data);
       });
 
-      setGoals(data);
-    });
+      const collectionRefEvents = collection(db, "users", `${user}/events`);
+      const qEvents = query(collectionRefEvents);
 
-    const collectionRefEvents = collection(db, "users", `${user}/events`);
-    const qEvents = query(collectionRefEvents);
+      onSnapshot(qEvents, (snapshot) => {
+        const data = snapshot.docs.map((doc) => {
+          return {
+            id: doc.id,
+            goal: doc.data().goal,
+            name: doc.data().name,
+            timestamp: doc.data().timestamp,
+          };
+        });
 
-    onSnapshot(qEvents, (snapshot) => {
-      const data = snapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          goal: doc.data().goal,
-          name: doc.data().name,
-          timestamp: doc.data().timestamp,
-        };
+        data.sort((a, b) => (a.goal > b.goal ? 1 : -1));
+
+        let goalSum = 0;
+        data.forEach((item, index) => {
+          goalSum += item.name === "up" ? 1 : -1;
+
+          if (data[index + 1]?.goal !== item.goal) {
+            // Save the data
+            updateSum(item.goal, goalSum);
+            console.log("log:", item.goal, goalSum);
+
+            // Reset
+            goalSum = 0;
+          }
+        });
       });
-
-      data.sort((a, b) => (a.goal > b.goal ? 1 : -1));
-
-      let goalSum = 0;
-      data.forEach((item, index) => {
-        goalSum += item.name === "up" ? 1 : -1;
-
-        if (data[index + 1]?.goal !== item.goal) {
-          // Save the data
-          updateSum(item.goal, goalSum);
-          console.log("log:", item.goal, goalSum);
-
-          // Reset
-          goalSum = 0;
-        }
-      });
-    });
-
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [state]);
+
+  console.debug("state:", state);
+
+  if (user === null) {
+    return <LoginButton />;
+  }
 
   return (
     <div className="App">
-      <LoginButton />
+      <p>User: {user}</p>
+
       <h1>Goals</h1>
       <button
         onClick={() => {
@@ -272,6 +289,6 @@ function App() {
       <button onClick={handleClick}>Add all default goals</button>
     </div>
   );
-}
+};
 
 export default App;
