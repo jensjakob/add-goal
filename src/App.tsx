@@ -218,6 +218,19 @@ function App() {
       <h1>Goals</h1>
       <button
         onClick={() => {
+          if (!("Notification" in window)) {
+            console.log("This browser does not support desktop notification");
+          } else {
+            console.log("notifications", Notification.permission);
+
+            Notification.requestPermission();
+          }
+        }}
+      >
+        OK notis
+      </button>
+      <button
+        onClick={() => {
           console.log("click");
 
           setTimeout(() => {
