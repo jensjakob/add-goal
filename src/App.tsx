@@ -28,7 +28,7 @@ const firebaseConfig = {
 // Enabling the debug mode flag is useful during implementation,
 // but it's recommended you remove it for production
 mixpanel.init("424af2fd1c1c4e8504092eac6eab65b0", {
-  api_host: "https://api-eu.mixpanel.com",
+  // api_host: "https://api-eu.mixpanel.com",
   property_blacklist: [
     "$browser",
     "$browser_version",
@@ -43,7 +43,20 @@ mixpanel.init("424af2fd1c1c4e8504092eac6eab65b0", {
   ip: false,
   debug: true,
 });
-mixpanel.track("init");
+
+mixpanel.track("init", {
+  breakpoint:
+    window.innerWidth < 640
+      ? "small"
+      : window.innerWidth > 1008
+      ? "large"
+      : "medium",
+  pointer: window.matchMedia("(pointer: fine)").matches
+    ? "fine"
+    : window.matchMedia("(pointer: coarse)").matches
+    ? "coarse"
+    : "none",
+});
 
 interface IGoal {
   id: string;
@@ -65,14 +78,6 @@ function App() {
   const db = getFirestore(app);
 
   const [goals, setGoals] = useState<IGoal[] | null>(null);
-
-  // if (!("Notification" in window)) {
-  //   console.log("This browser does not support desktop notification");
-  // } else {
-  //   console.log("notifications", Notification.permission);
-
-  //   Notification.requestPermission();
-  // }
 
   async function addEvent(name: string, goal: string) {
     try {
