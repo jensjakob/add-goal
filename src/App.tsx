@@ -66,6 +66,14 @@ function App() {
 
   const [goals, setGoals] = useState<IGoal[] | null>(null);
 
+  // if (!("Notification" in window)) {
+  //   console.log("This browser does not support desktop notification");
+  // } else {
+  //   console.log("notifications", Notification.permission);
+
+  //   Notification.requestPermission();
+  // }
+
   async function addEvent(name: string, goal: string) {
     try {
       const data: IEvent = {
@@ -208,6 +216,30 @@ function App() {
     <div className="App">
       <LoginButton />
       <h1>Goals</h1>
+      <button
+        onClick={() => {
+          console.log("click");
+
+          setTimeout(() => {
+            console.log("visi", document.visibilityState);
+            if (document.visibilityState === "hidden") {
+              const notis = new Notification("Hur mår du?");
+              console.log("sent");
+
+              // setTimeout(() => {
+              //   notis.close();
+              // }, 10 * 1000);
+
+              // window.onfocus = () => notis.close();
+              document.addEventListener("visibilitychange", () =>
+                notis.close()
+              );
+            }
+          }, 3 * 1000);
+        }}
+      >
+        Dagens fråga
+      </button>
       <ul>
         {goals?.map((goal) => (
           <li key={goal.id}>
