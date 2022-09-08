@@ -204,6 +204,18 @@ const App = () => {
           };
         });
 
+        //TODO: Add popularity and last action and show popular but not updated first
+
+        const d = new Date();
+        let hour = d.getHours();
+
+        // Hour is indexed, so before noon, show lowest first
+        if (hour < 11) {
+          data.sort((a, b) => (a.sum > b.sum ? 1 : -1));
+        } else {
+          data.sort((a, b) => (a.sum > b.sum ? -1 : 1));
+        }
+
         setGoals(data);
       });
 
