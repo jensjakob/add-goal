@@ -158,6 +158,7 @@ const App = () => {
       "Career",
       "Nature",
       "Home",
+      "Strength",
     ];
 
     defaultGoals.forEach(async (goal) => {
