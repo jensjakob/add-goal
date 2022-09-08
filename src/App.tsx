@@ -19,6 +19,7 @@ import { getAnalytics, logEvent } from "firebase/analytics";
 import "./App.css";
 import LoginButton from "./components/LoginButton";
 import { MyContext } from "./context/MyContext";
+import Graph from "./components/Graph";
 
 // import styles from "./App.module.css";
 
@@ -184,7 +185,7 @@ const App = () => {
   function oneGraph(goal: string) {
     return graphData
       ?.filter((event) => event.goal === goal)
-      .map((goal) => <span>{goal.value}</span>);
+      .map((event) => ({ label: event.label, value: event.value }));
   }
 
   useEffect(() => {
@@ -214,7 +215,7 @@ const App = () => {
             id: doc.id,
             goal: doc.data().goal,
             name: doc.data().name,
-            timestamp: doc.data().timestamp,
+            timestamp: doc.data().timestamp.toDate(),
           };
         });
 
@@ -234,7 +235,6 @@ const App = () => {
 
         // setEvents(data);
         setGraphData(dataPoints);
-        console.log(graphData);
 
         let goalSum = 0;
         data.forEach((item, index) => {
@@ -302,11 +302,14 @@ const App = () => {
       <ul>
         {goals?.map((goal) => (
           <li key={goal.id}>
-            {oneGraph(goal.id)}
+            <Graph goal={goal.id} xy={oneGraph(goal.id)} />
             {goal.label}{" "}
             <button onClick={() => handleDown(goal.id, goal.sum)}>👎</button>{" "}
             {goal?.sum}{" "}
-            <button onClick={() => handleUp(goal.id, goal.sum)}>
+            <button
+              style={{ padding: 10 }}
+              onClick={() => handleUp(goal.id, goal.sum)}
+            >
               {abPositiveEmoji}
             </button>
             {/* <button onClick={() => handleDelete(goal.id)}>Delete</button> */}
