@@ -47,6 +47,12 @@ interface IEvent {
   timestamp: Date;
 }
 
+interface IGraphData {
+  goal: string;
+  label: Date;
+  value: number;
+}
+
 // let user = "39Z2Nsdjj4Vh8xvg9cJr";
 
 const App = () => {
@@ -75,6 +81,8 @@ const App = () => {
     });
 
   const [goals, setGoals] = useState<IGoal[] | null>(null);
+  // const [events, setEvents] = useState<IEvent[] | null>(null);
+  const [graphData, setGraphData] = useState<IGraphData[] | null>(null);
 
   let user: string | null = null;
 
@@ -171,6 +179,14 @@ const App = () => {
     });
   }
 
+  // const accumulate = array => array.map((sum => value => sum += value)(0));
+
+  function oneGraph(goal: string) {
+    return graphData
+      ?.filter((event) => event.goal === goal)
+      .map((goal) => <span>{goal.value}</span>);
+  }
+
   useEffect(() => {
     if (state?.user) {
       const collectionRef = collection(db, "users", `${user}/goals`);
@@ -204,6 +220,22 @@ const App = () => {
 
         data.sort((a, b) => (a.goal > b.goal ? 1 : -1));
 
+        let dataPoints = data
+          .filter((event) => event.name === "up" || event.name === "down")
+          .map((event) => {
+            const value = event.name === "up" ? 1 : -1;
+
+            return {
+              goal: event.goal,
+              label: event.timestamp,
+              value: value,
+            };
+          });
+
+        // setEvents(data);
+        setGraphData(dataPoints);
+        console.log(graphData);
+
         let goalSum = 0;
         data.forEach((item, index) => {
           goalSum += item.name === "up" ? 1 : -1;
@@ -211,7 +243,6 @@ const App = () => {
           if (data[index + 1]?.goal !== item.goal) {
             // Save the data
             updateSum(item.goal, goalSum);
-            console.log("log:", item.goal, goalSum);
 
             // Reset
             goalSum = 0;
@@ -220,9 +251,7 @@ const App = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
-
-  console.debug("state:", state);
+  }, [state]); //TODO: Will it check for user?
 
   if (user === null) {
     return <LoginButton />;
@@ -273,6 +302,7 @@ const App = () => {
       <ul>
         {goals?.map((goal) => (
           <li key={goal.id}>
+            {oneGraph(goal.id)}
             {goal.label}{" "}
             <button onClick={() => handleDown(goal.id, goal.sum)}>👎</button>{" "}
             {goal?.sum}{" "}
