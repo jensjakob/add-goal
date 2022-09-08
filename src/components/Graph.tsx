@@ -10,6 +10,9 @@ import {
   ChartOptions,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+// import { sv } from "date-fns/locale";
+import "chartjs-adapter-date-fns";
+import { sv } from "date-fns/locale";
 
 ChartJS.register(
   CategoryScale,
@@ -36,11 +39,29 @@ export const Graph: React.FC<Props> = ({ goal, xy }) => {
     responsive: true,
     scales: {
       x: {
+        title: {
+          display: false,
+        },
         display: false,
-        // type: "time",
-        // time: {
-        //   unit: "day",
-        // },
+        grid: {
+          drawBorder: true,
+          color: function (context) {
+            if (context.tick.value === 0) {
+              return "#000000";
+            }
+          },
+        },
+        type: "time",
+        time: {
+          unit: "hour",
+          // Luxon format string
+          tooltipFormat: "yyyy-MM-dd",
+        },
+        adapters: {
+          date: {
+            locale: sv,
+          },
+        },
       },
       y: {
         display: false,
@@ -50,7 +71,7 @@ export const Graph: React.FC<Props> = ({ goal, xy }) => {
 
   xy?.sort((a, b) => a.label.getTime() - b.label.getTime());
 
-  const labels = xy?.map((xy) => xy.label);
+  const labels = xy?.map((xy) => xy.label); // .toLocaleDateString("sv-SE"));
   const values = xy?.map((xy) => xy.value);
 
   const accValues = values?.map((element, index, array) => {
@@ -59,7 +80,7 @@ export const Graph: React.FC<Props> = ({ goal, xy }) => {
     return (array[index] += array[index - 1] ? array[index - 1] : 0);
   });
 
-  console.debug("labels", labels);
+  // console.debug("labels", labels);
   // console.debug("values", values);
 
   const data = {
