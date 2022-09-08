@@ -9,6 +9,12 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+import {
+  fetchAndActivate,
+  getRemoteConfig,
+  getValue,
+} from "firebase/remote-config";
+import { getAnalytics, logEvent } from "firebase/analytics";
 
 import "./App.css";
 import LoginButton from "./components/LoginButton";
@@ -48,6 +54,25 @@ const App = () => {
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const analytics = getAnalytics(app);
+  const remoteConfig = getRemoteConfig(app);
+
+  remoteConfig.defaultConfig = {
+    positive_emoji: "👍",
+  };
+
+  const abPositiveEmoji: string = getValue(
+    remoteConfig,
+    "positive_emoji"
+  ).asString();
+
+  fetchAndActivate(remoteConfig)
+    .then(() => {
+      // ...
+    })
+    .catch((err) => {
+      // ...
+    });
 
   const [goals, setGoals] = useState<IGoal[] | null>(null);
 
@@ -87,6 +112,8 @@ const App = () => {
     });
 
     addEvent("up", docId);
+    logEvent(analytics, "like");
+    console.debug("like");
   }
 
   async function handleDown(docId: string, sum: number = 0) {
@@ -249,7 +276,9 @@ const App = () => {
             {goal.label}{" "}
             <button onClick={() => handleDown(goal.id, goal.sum)}>👎</button>{" "}
             {goal?.sum}{" "}
-            <button onClick={() => handleUp(goal.id, goal.sum)}>👍</button>
+            <button onClick={() => handleUp(goal.id, goal.sum)}>
+              {abPositiveEmoji}
+            </button>
             {/* <button onClick={() => handleDelete(goal.id)}>Delete</button> */}
           </li>
         ))}
