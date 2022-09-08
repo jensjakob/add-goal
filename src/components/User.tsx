@@ -30,6 +30,7 @@ const User = () => {
   function onLogin(userId: string) {
     if (setState) {
       setState({ user: userId });
+      sessionStorage.setItem("state", JSON.stringify({ user: userId }));
     }
   }
 

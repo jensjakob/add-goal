@@ -18,6 +18,13 @@ export const MyContext = createContext<Partial<IContext>>({});
 const MyContextProvider: React.FC<Props> = ({ children }) => {
   const [state, setState] = useState<IState>({ user: null });
 
+  if (!state.user) {
+    const localState = sessionStorage.getItem("state");
+    if (localState) {
+      setState(JSON.parse(localState));
+    }
+  }
+
   return (
     <MyContext.Provider value={{ state, setState }}>
       {children}
