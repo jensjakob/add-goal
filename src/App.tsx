@@ -8,6 +8,7 @@ import {
   addDoc,
   doc,
   updateDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import {
   fetchAndActivate,
@@ -24,11 +25,11 @@ import Graph from "./components/Graph";
 // import styles from "./App.module.css";
 
 // Date as Year Month Day (YMD) string in the format of "yyyy-MM-dd"
-// function ymd(date: Date | undefined) {
-//   if (!date) return "";
+function ymd(date: Date | undefined) {
+  if (!date) return "";
 
-//   return date.toLocaleDateString("sv-SE");
-// }
+  return date.toLocaleTimeString("sv-SE");
+}
 
 // https://bobbyhadz.com/blog/javascript-date-add-hours
 function addHours(numOfHours: number, date = new Date()) {
@@ -55,6 +56,7 @@ interface IGoal {
   label: string;
   sum?: number;
   last_updated?: Date;
+  raw_date: any;
 }
 
 interface IEvent {
@@ -111,7 +113,7 @@ const App = () => {
       const data: IEvent = {
         goal,
         name,
-        timestamp: new Date(),
+        timestamp: new Date(), //TODO: Change to serverTimestamp?
       };
       await addDoc(collection(db, `users/${user}/events`), data);
       // console.log("Document written with ID: ", docRef.id);
@@ -133,7 +135,7 @@ const App = () => {
 
     await updateDoc(docRef, {
       sum: sum + 1,
-      last_updated: new Date(),
+      last_updated: serverTimestamp(),
     });
 
     addEvent("up", docId);
@@ -146,7 +148,7 @@ const App = () => {
 
     await updateDoc(docRef, {
       sum: sum - 1,
-      last_updated: new Date(),
+      last_updated: serverTimestamp(),
     });
 
     addEvent("down", docId);
@@ -219,6 +221,7 @@ const App = () => {
             label: doc.data().label,
             sum: doc.data().sum,
             last_updated: doc.data().last_updated?.toDate(),
+            raw_date: doc.data().last_updated,
           };
         });
 
@@ -227,8 +230,8 @@ const App = () => {
         const d = new Date();
         let hour = d.getHours();
 
-        // Hour is indexed, so before noon, show lowest first
-        if (hour < 11) {
+        // Before fika, show lowest first
+        if (hour < 15) {
           data.sort((a, b) => (a.sum > b.sum ? 1 : -1));
         } else {
           data.sort((a, b) => (a.sum > b.sum ? -1 : 1));
@@ -333,10 +336,17 @@ const App = () => {
       <ul>
         {goals?.map((goal) => {
           if (
-            goal.last_updated &&
-            addHours(1, goal.last_updated) > new Date()
+            goal.raw_date &&
+            addHours(1, goal.raw_date?.toDate()) > new Date()
           ) {
-            return false;
+            console.debug("last_updated", goal.last_updated);
+            console.log("raw_date", goal.raw_date?.toDate());
+            return (
+              <li>
+                {ymd(goal.last_updated)} {ymd(addHours(1, goal.last_updated))}{" "}
+                {ymd(new Date())}
+              </li>
+            );
           }
           return (
             <li key={goal.id}>
