@@ -23,6 +23,20 @@ import Graph from "./components/Graph";
 
 // import styles from "./App.module.css";
 
+// Date as Year Month Day (YMD) string in the format of "yyyy-MM-dd"
+// function ymd(date: Date | undefined) {
+//   if (!date) return "";
+
+//   return date.toLocaleDateString("sv-SE");
+// }
+
+// https://bobbyhadz.com/blog/javascript-date-add-hours
+function addHours(numOfHours: number, date = new Date()) {
+  date.setTime(date.getTime() + numOfHours * 60 * 60 * 1000);
+
+  return date;
+}
+
 const firebaseConfig = {
   apiKey: "AIzaSyDAg5RUuTd5oq5inNHkRAYOjralOn_SK2Q",
   authDomain: "add-goal-app.firebaseapp.com",
@@ -40,6 +54,7 @@ interface IGoal {
   name: string;
   label: string;
   sum?: number;
+  last_updated?: Date;
 }
 
 interface IEvent {
@@ -118,6 +133,7 @@ const App = () => {
 
     await updateDoc(docRef, {
       sum: sum + 1,
+      last_updated: new Date(),
     });
 
     addEvent("up", docId);
@@ -130,6 +146,7 @@ const App = () => {
 
     await updateDoc(docRef, {
       sum: sum - 1,
+      last_updated: new Date(),
     });
 
     addEvent("down", docId);
@@ -201,6 +218,7 @@ const App = () => {
             name: doc.data().name,
             label: doc.data().label,
             sum: doc.data().sum,
+            last_updated: doc.data().last_updated?.toDate(),
           };
         });
 
@@ -313,21 +331,29 @@ const App = () => {
         Dagens fråga
       </button>
       <ul>
-        {goals?.map((goal) => (
-          <li key={goal.id}>
-            <Graph goal={goal.id} xy={oneGraph(goal.id)} />
-            {goal.label}{" "}
-            <button onClick={() => handleDown(goal.id, goal.sum)}>👎</button>{" "}
-            {goal?.sum}{" "}
-            <button
-              style={{ padding: 10 }}
-              onClick={() => handleUp(goal.id, goal.sum)}
-            >
-              {abPositiveEmoji}
-            </button>
-            {/* <button onClick={() => handleDelete(goal.id)}>Delete</button> */}
-          </li>
-        ))}
+        {goals?.map((goal) => {
+          if (
+            goal.last_updated &&
+            addHours(1, goal.last_updated) > new Date()
+          ) {
+            return false;
+          }
+          return (
+            <li key={goal.id}>
+              <Graph goal={goal.id} xy={oneGraph(goal.id)} />
+              {goal.label}{" "}
+              <button onClick={() => handleDown(goal.id, goal.sum)}>👎</button>{" "}
+              {goal?.sum}{" "}
+              <button
+                style={{ padding: 10 }}
+                onClick={() => handleUp(goal.id, goal.sum)}
+              >
+                {abPositiveEmoji}
+              </button>
+              {/* <button onClick={() => handleDelete(goal.id)}>Delete</button> */}
+            </li>
+          );
+        })}
       </ul>
       <button onClick={handleClick}>Add all default goals</button>
     </div>
