@@ -19,7 +19,7 @@ const MyContextProvider: React.FC<Props> = ({ children }) => {
   const [state, setState] = useState<IState>({ user: null });
 
   if (!state.user) {
-    const localState = sessionStorage.getItem("state");
+    const localState = localStorage.getItem("state");
     if (localState) {
       setState(JSON.parse(localState));
     }
