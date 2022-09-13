@@ -28,7 +28,9 @@ import Graph from "./components/Graph";
 function ymd(date: Date | undefined) {
   if (!date) return "";
 
-  return date.toLocaleTimeString("sv-SE");
+  return (
+    date.toLocaleDateString("sv-SE") + " " + date.toLocaleTimeString("sv-SE")
+  );
 }
 
 // https://bobbyhadz.com/blog/javascript-date-add-hours
@@ -291,6 +293,10 @@ const App = () => {
     return <LoginButton />;
   }
 
+  const isDone = (goal: IGoal) => {
+    return goal.raw_date && addHours(1, goal.raw_date?.toDate()) > new Date();
+  };
+
   return (
     <div className="App">
       <p>User: {user}</p>
@@ -333,38 +339,56 @@ const App = () => {
       >
         Dagens fråga
       </button>
-      <ul>
-        {goals?.map((goal) => {
-          if (
-            goal.raw_date &&
-            addHours(1, goal.raw_date?.toDate()) > new Date()
-          ) {
-            console.debug("last_updated", goal.last_updated);
-            console.log("raw_date", goal.raw_date?.toDate());
-            return (
-              <li>
-                {ymd(goal.last_updated)} {ymd(addHours(1, goal.last_updated))}{" "}
-                {ymd(new Date())}
-              </li>
-            );
-          }
-          return (
-            <li key={goal.id}>
-              <Graph goal={goal.id} xy={oneGraph(goal.id)} />
-              {goal.label}{" "}
-              <button onClick={() => handleDown(goal.id, goal.sum)}>👎</button>{" "}
-              {goal?.sum}{" "}
-              <button
-                style={{ padding: 10 }}
-                onClick={() => handleUp(goal.id, goal.sum)}
-              >
-                {abPositiveEmoji}
-              </button>
+      {goals?.map((goal) => {
+        return (
+          <div
+            style={{
+              padding: "10px",
+              margin: "10px",
+              border: "1px solid black",
+            }}
+            key={goal.id}
+          >
+            <strong>{goal.label}</strong>
+            <br />
+            <small>{ymd(goal.last_updated)}</small>
+            <div
+              style={{
+                display: "flex",
+                height: "80px",
+                justifyContent: "space-between",
+              }}
+            >
+              {!isDone(goal) && (
+                <button
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    fontSize: "1.5em",
+                  }}
+                  onClick={() => handleDown(goal.id, goal.sum)}
+                >
+                  👎
+                </button>
+              )}
+
+              <div style={{ flexGrow: "1", width: "100%" }}>
+                <Graph goal={goal.id} xy={oneGraph(goal.id)} />
+              </div>
+
+              {!isDone(goal) && (
+                <button
+                  style={{ width: "40px", height: "40px", fontSize: "1.5em" }}
+                  onClick={() => handleUp(goal.id, goal.sum)}
+                >
+                  {abPositiveEmoji}
+                </button>
+              )}
               {/* <button onClick={() => handleDelete(goal.id)}>Delete</button> */}
-            </li>
-          );
-        })}
-      </ul>
+            </div>
+          </div>
+        );
+      })}
       <button onClick={handleClick}>Add all default goals</button>
     </div>
   );

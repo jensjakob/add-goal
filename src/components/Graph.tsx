@@ -37,6 +37,7 @@ interface Props {
 export const Graph: React.FC<Props> = ({ goal, xy }) => {
   const options: ChartOptions<"line"> = {
     responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         title: {
@@ -95,11 +96,7 @@ export const Graph: React.FC<Props> = ({ goal, xy }) => {
     ],
   };
 
-  return (
-    <div style={{ display: "inline-block", width: 120, height: 60 }}>
-      <Line options={options} data={data} />
-    </div>
-  );
+  return <Line options={options} data={data} />;
 };
 
 export default Graph;
