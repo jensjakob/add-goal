@@ -357,32 +357,35 @@ const App = () => {
                 display: "flex",
                 height: "80px",
                 justifyContent: "space-between",
+                verticalAlign: "bottom",
               }}
             >
               {!isDone(goal) && (
-                <button
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    fontSize: "1.5em",
-                  }}
-                  onClick={() => handleDown(goal.id, goal.sum)}
-                >
-                  👎
-                </button>
+                <div>
+                  <button
+                    style={{
+                      fontSize: "2em",
+                    }}
+                    onClick={() => handleDown(goal.id, goal.sum)}
+                  >
+                    👎
+                  </button>
+                </div>
               )}
 
-              <div style={{ flexGrow: "1", width: "100%" }}>
+              <div style={{ flexGrow: "1", width: "1%" }}>
                 <Graph goal={goal.id} xy={oneGraph(goal.id)} />
               </div>
 
               {!isDone(goal) && (
-                <button
-                  style={{ width: "40px", height: "40px", fontSize: "1.5em" }}
-                  onClick={() => handleUp(goal.id, goal.sum)}
-                >
-                  {abPositiveEmoji}
-                </button>
+                <div>
+                  <button
+                    style={{ fontSize: "2em" }}
+                    onClick={() => handleUp(goal.id, goal.sum)}
+                  >
+                    {abPositiveEmoji}
+                  </button>
+                </div>
               )}
               {/* <button onClick={() => handleDelete(goal.id)}>Delete</button> */}
             </div>
