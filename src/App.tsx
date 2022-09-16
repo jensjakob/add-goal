@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { initializeApp } from "firebase/app";
 import {
   getFirestore,
@@ -83,6 +83,8 @@ const App = () => {
   const analytics = getAnalytics(app);
   const remoteConfig = getRemoteConfig(app);
 
+  const inputRefNewGoal = useRef<HTMLInputElement>(null);
+
   remoteConfig.defaultConfig = {
     positive_emoji: "👍",
   };
@@ -162,7 +164,7 @@ const App = () => {
   // }
 
   async function handleClick() {
-    let defaultGoals = [
+    let newGoals = [
       "Happiness",
       "Money",
       "Save the world",
@@ -182,7 +184,12 @@ const App = () => {
       "Strength",
     ];
 
-    defaultGoals.forEach(async (goal) => {
+    if (!!inputRefNewGoal.current?.value) {
+      newGoals = [inputRefNewGoal.current.value];
+      inputRefNewGoal.current.value = "";
+    }
+
+    newGoals.forEach(async (goal) => {
       // Stop if goal exist
       if (goals?.find((g) => g.label === goal)) {
         return;
@@ -392,7 +399,10 @@ const App = () => {
           </div>
         );
       })}
-      <button onClick={handleClick}>Add all default goals</button>
+      <h2>Add new</h2>
+      <p>All missing default goals will be added if empty.</p>
+      <input type="text" ref={inputRefNewGoal} />
+      <button onClick={handleClick}>Add</button>
     </div>
   );
 };
