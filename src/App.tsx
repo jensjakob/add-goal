@@ -105,6 +105,7 @@ const App = () => {
   const [goals, setGoals] = useState<IGoal[] | null>(null);
   // const [events, setEvents] = useState<IEvent[] | null>(null);
   const [graphData, setGraphData] = useState<IGraphData[] | null>(null);
+  const [sorting, setSorting] = useState<Array<string>>([]);
 
   let user: string | null = null;
 
@@ -239,11 +240,17 @@ const App = () => {
         const d = new Date();
         let hour = d.getHours();
 
-        // Before fika, show lowest first
-        if (hour < 15) {
-          data.sort((a, b) => (a.sum > b.sum ? 1 : -1));
+        if (sorting.length > 0) {
+          data.sort((a, b) => sorting.indexOf(a.id) - sorting.indexOf(b.id));
         } else {
-          data.sort((a, b) => (a.sum > b.sum ? -1 : 1));
+          // Before fika, show lowest first
+          if (hour < 15) {
+            data.sort((a, b) => (a.sum > b.sum ? 1 : -1));
+          } else {
+            data.sort((a, b) => (a.sum > b.sum ? -1 : 1));
+          }
+
+          setSorting(data.map((goal) => goal.id));
         }
 
         setGoals(data);
