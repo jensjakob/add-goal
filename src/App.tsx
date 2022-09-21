@@ -159,6 +159,20 @@ const App = () => {
     addEvent("down", docId);
   }
 
+  // function ab(name: string, payload: () => void) {
+  //   if (Math.random() < 0.5) {
+  //     mixpanel.track("$experiment_started", {
+  //       "Experiment name": name,
+  //       "Variant name": "A",
+  //     });
+  //     return payload();
+  //   }
+  //   mixpanel.track("$experiment_started", {
+  //     "Experiment name": name,
+  //     "Variant name": "B",
+  //   });
+  //   return false;
+  // }
   function handleSorting() {
     console.log(sorting);
   }
