@@ -159,6 +159,9 @@ const App = () => {
     addEvent("down", docId);
   }
 
+  function handleSorting() {
+    console.log(sorting);
+  }
   // async function handleDelete(docId: string) {
   //   await deleteDoc(doc(db, `users/${user}/goals`, docId));
   //   // Events is not deleted
@@ -316,6 +319,7 @@ const App = () => {
   return (
     <div className="App">
       <p>User: {user}</p>
+      <button onClick={handleSorting}>sortera</button>
 
       <h1>Goals</h1>
       <button
