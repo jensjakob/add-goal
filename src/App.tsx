@@ -227,6 +227,30 @@ const App = () => {
     });
   }
 
+  function smartSort(goals: IGoal[]) {
+    // if (!goals) return false;
+
+    if (sorting.length > 0) {
+      debugger;
+      return goals.sort(
+        (a, b) => sorting.indexOf(a.name) - sorting.indexOf(b.name)
+      );
+    }
+    // TODO: Why does it goes here on update, on prod?
+
+    // Before fika, show lowest first
+    if (new Date().getHours() < 15) {
+      goals.sort((a, b) => a.raw_date - b.raw_date);
+    } else {
+      goals.sort((a, b) => b.raw_date - a.raw_date);
+    }
+    debugger;
+
+    setSorting(goals.map((goal) => goal.name));
+
+    return goals;
+  }
+
   // const accumulate = array => array.map((sum => value => sum += value)(0));
 
   function oneGraph(goal: string) {
@@ -302,29 +326,7 @@ const App = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  function smartSort(goals: IGoal[]) {
-    // if (!goals) return false;
-
-    if (sorting.length > 0) {
-      debugger;
-      return goals.sort(
-        (a, b) => sorting.indexOf(a.name) - sorting.indexOf(b.name)
-      );
-    }
-    // TODO: Why does it goes here on update, on prod?
-
-    // Before fika, show lowest first
-    if (new Date().getHours() < 15) {
-      goals.sort((a, b) => a.raw_date - b.raw_date);
-    } else {
-      goals.sort((a, b) => b.raw_date - a.raw_date);
-    }
-    debugger;
-
-    setSorting(goals.map((goal) => goal.name));
-
-    return goals;
-  }
+  }, [state?.user]);
 
   if (user === null) {
     return <LoginButton />;
