@@ -241,7 +241,9 @@ const App = () => {
         let hour = d.getHours();
 
         if (sorting.length > 0) {
-          data.sort((a, b) => sorting.indexOf(a.id) - sorting.indexOf(b.id));
+          data.sort(
+            (a, b) => sorting.indexOf(a.name) - sorting.indexOf(b.name)
+          );
         } else {
           // Before fika, show lowest first
           if (hour < 15) {
@@ -250,7 +252,7 @@ const App = () => {
             data.sort((a, b) => b.raw_date - a.raw_date);
           }
 
-          setSorting(data.map((goal) => goal.id));
+          setSorting(data.map((goal) => goal.name));
         }
 
         setGoals(data);
