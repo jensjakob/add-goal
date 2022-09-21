@@ -240,25 +240,7 @@ const App = () => {
 
         //TODO: Add popularity and last action and show popular but not updated first
 
-        const d = new Date();
-        let hour = d.getHours();
-
-        if (sorting.length > 0) {
-          data.sort(
-            (a, b) => sorting.indexOf(a.name) - sorting.indexOf(b.name)
-          );
-        } else {
-          // Before fika, show lowest first
-          if (hour < 15) {
-            data.sort((a, b) => a.raw_date - b.raw_date);
-          } else {
-            data.sort((a, b) => b.raw_date - a.raw_date);
-          }
-
-          setSorting(data.map((goal) => goal.name));
-        }
-
-        setGoals(data);
+        setGoals(smartSort(data));
       });
 
       const collectionRefEvents = collection(db, "users", `${user}/events`);
@@ -306,7 +288,29 @@ const App = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]); //TODO: Will it check for user?
+  function smartSort(goals: IGoal[]) {
+    // if (!goals) return false;
+
+    if (sorting.length > 0) {
+      debugger;
+      return goals.sort(
+        (a, b) => sorting.indexOf(a.name) - sorting.indexOf(b.name)
+      );
+    }
+    // TODO: Why does it goes here on update, on prod?
+
+    // Before fika, show lowest first
+    if (new Date().getHours() < 15) {
+      goals.sort((a, b) => a.raw_date - b.raw_date);
+    } else {
+      goals.sort((a, b) => b.raw_date - a.raw_date);
+    }
+    debugger;
+
+    setSorting(goals.map((goal) => goal.name));
+
+    return goals;
+  }
 
   if (user === null) {
     return <LoginButton />;
