@@ -245,9 +245,9 @@ const App = () => {
         } else {
           // Before fika, show lowest first
           if (hour < 15) {
-            data.sort((a, b) => (a.sum > b.sum ? 1 : -1));
+            data.sort((a, b) => a.raw_date - b.raw_date);
           } else {
-            data.sort((a, b) => (a.sum > b.sum ? -1 : 1));
+            data.sort((a, b) => b.raw_date - a.raw_date);
           }
 
           setSorting(data.map((goal) => goal.id));
