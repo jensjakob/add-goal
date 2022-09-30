@@ -15,7 +15,6 @@ import {
   getRemoteConfig,
   getValue,
 } from "firebase/remote-config";
-import { getAnalytics, logEvent } from "firebase/analytics";
 
 import "./App.css";
 import LoginButton from "./components/LoginButton";
@@ -80,7 +79,6 @@ const App = () => {
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const analytics = getAnalytics(app);
   const remoteConfig = getRemoteConfig(app);
 
   const inputRefNewGoal = useRef<HTMLInputElement>(null);
@@ -144,7 +142,6 @@ const App = () => {
     });
 
     addEvent("up", docId);
-    logEvent(analytics, "like");
     console.debug("like");
   }
 
