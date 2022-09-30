@@ -10,11 +10,6 @@ import {
   updateDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import {
-  fetchAndActivate,
-  getRemoteConfig,
-  getValue,
-} from "firebase/remote-config";
 
 import "./App.css";
 import LoginButton from "./components/LoginButton";
@@ -79,26 +74,8 @@ const App = () => {
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const remoteConfig = getRemoteConfig(app);
 
   const inputRefNewGoal = useRef<HTMLInputElement>(null);
-
-  remoteConfig.defaultConfig = {
-    positive_emoji: "👍",
-  };
-
-  const abPositiveEmoji: string = getValue(
-    remoteConfig,
-    "positive_emoji"
-  ).asString();
-
-  fetchAndActivate(remoteConfig)
-    .then(() => {
-      // ...
-    })
-    .catch((err) => {
-      // ...
-    });
 
   const [goals, setGoals] = useState<IGoal[] | null>(null);
   // const [events, setEvents] = useState<IEvent[] | null>(null);
@@ -420,7 +397,7 @@ const App = () => {
                     style={{ fontSize: "2em" }}
                     onClick={() => handleUp(goal.id, goal.sum)}
                   >
-                    {abPositiveEmoji}
+                    👍
                   </button>
                 </div>
               )}
