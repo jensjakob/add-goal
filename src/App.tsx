@@ -81,6 +81,7 @@ const App = () => {
   // const [events, setEvents] = useState<IEvent[] | null>(null);
   const [graphData, setGraphData] = useState<IGraphData[] | null>(null);
   const [sorting, setSorting] = useState<Array<string>>([]);
+  const [rawGoals, setRawGoals] = useState<any>();
 
   let user: string | null = null;
 
@@ -205,7 +206,7 @@ const App = () => {
     // if (!goals) return false;
 
     if (sorting.length > 0) {
-      debugger;
+      // debugger;
       return goals.sort(
         (a, b) => sorting.indexOf(a.name) - sorting.indexOf(b.name)
       );
@@ -218,7 +219,7 @@ const App = () => {
     } else {
       goals.sort((a, b) => b.raw_date - a.raw_date);
     }
-    debugger;
+    // debugger;
 
     setSorting(goals.map((goal) => goal.name));
 
@@ -234,25 +235,35 @@ const App = () => {
   }
 
   useEffect(() => {
+    if (!rawGoals) return;
+
+    const data = rawGoals.map((doc: any) => {
+      return {
+        id: doc.id,
+        name: doc.data().name,
+        label: doc.data().label,
+        sum: doc.data().sum,
+        last_updated: doc.data().last_updated?.toDate(),
+        raw_date: doc.data().last_updated,
+      };
+    });
+
+    const sortedData = smartSort(data);
+    setGoals(sortedData);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawGoals]);
+
+  useEffect(() => {
     if (state?.user) {
       const collectionRef = collection(db, "users", `${user}/goals`);
       const q = query(collectionRef);
 
       onSnapshot(q, (snapshot) => {
-        const data = snapshot.docs.map((doc) => {
-          return {
-            id: doc.id,
-            name: doc.data().name,
-            label: doc.data().label,
-            sum: doc.data().sum,
-            last_updated: doc.data().last_updated?.toDate(),
-            raw_date: doc.data().last_updated,
-          };
-        });
+        // const data = snapshot.docs.map((doc) => {
+        // });
 
-        //TODO: Add popularity and last action and show popular but not updated first
-
-        setGoals(smartSort(data));
+        setRawGoals(snapshot.docs);
       });
 
       const collectionRefEvents = collection(db, "users", `${user}/events`);
