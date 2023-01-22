@@ -376,7 +376,9 @@ const App = () => {
           >
             <strong>{goal.label}</strong>
             <br />
-            <small>{ymd(goal.last_updated)}</small>
+            <small>
+              {goal.last_updated ? ymd(goal.last_updated) : "Saving..."}
+            </small>
             <div
               style={{
                 display: "flex",
