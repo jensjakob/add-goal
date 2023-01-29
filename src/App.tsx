@@ -50,7 +50,7 @@ interface IGoal {
   id: string;
   name: string;
   label: string;
-  sum?: number;
+  sum: number; //TODO: Does it always exist?
   last_updated?: Date;
   raw_date: any;
 }
@@ -215,9 +215,9 @@ const App = () => {
 
     // Before fika, show lowest first
     if (new Date().getHours() < 15) {
-      goals.sort((a, b) => a.raw_date - b.raw_date);
+      goals.sort((a, b) => a.sum - b.sum);
     } else {
-      goals.sort((a, b) => b.raw_date - a.raw_date);
+      goals.sort((a, b) => b.sum - a.sum);
     }
     // debugger;
 
