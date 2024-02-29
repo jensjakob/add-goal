@@ -103,14 +103,6 @@ const App = () => {
     }
   }
 
-  async function updateSum(docId: string, sum: number) {
-    const docRef = doc(db, "users", `${user}/goals/${docId}`);
-
-    await updateDoc(docRef, {
-      sum: sum,
-    });
-  }
-
   async function handleUp(docId: string, sum: number = 0) {
     const docRef = doc(db, "users", `${user}/goals/${docId}`);
 
@@ -295,19 +287,6 @@ const App = () => {
 
         // setEvents(data);
         setGraphData(dataPoints);
-
-        let goalSum = 0;
-        data.forEach((item, index) => {
-          goalSum += item.name === "up" ? 1 : -1;
-
-          if (data[index + 1]?.goal !== item.goal) {
-            // Save the data
-            updateSum(item.goal, goalSum);
-
-            // Reset
-            goalSum = 0;
-          }
-        });
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
