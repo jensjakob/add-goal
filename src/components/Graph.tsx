@@ -38,6 +38,7 @@ export const Graph: React.FC<Props> = ({ goal, xy }) => {
   const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: false,
     scales: {
       x: {
         title: {
