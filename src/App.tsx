@@ -14,7 +14,7 @@ import {
 import "./App.css";
 import LoginButton from "./components/LoginButton";
 import { MyContext } from "./context/MyContext";
-import Graph from "./components/Graph";
+// import Graph from "./components/Graph";
 
 // import styles from "./App.module.css";
 
@@ -61,11 +61,11 @@ interface IEvent {
   timestamp: Date;
 }
 
-interface IGraphData {
-  goal: string;
-  label: Date;
-  value: number;
-}
+// interface IGraphData {
+//   goal: string;
+//   label: Date;
+//   value: number;
+// }
 
 // let user = "39Z2Nsdjj4Vh8xvg9cJr";
 
@@ -79,7 +79,7 @@ const App = () => {
 
   const [goals, setGoals] = useState<IGoal[] | null>(null);
   // const [events, setEvents] = useState<IEvent[] | null>(null);
-  const [graphData, setGraphData] = useState<IGraphData[] | null>(null);
+  // const [graphData, setGraphData] = useState<IGraphData[] | null>(null);
   const [sorting, setSorting] = useState<Array<string>>([]);
   const [rawGoals, setRawGoals] = useState<any>();
 
@@ -220,11 +220,11 @@ const App = () => {
 
   // const accumulate = array => array.map((sum => value => sum += value)(0));
 
-  function oneGraph(goal: string) {
-    return graphData
-      ?.filter((event) => event.goal === goal)
-      .map((event) => ({ label: event.label, value: event.value }));
-  }
+  // function oneGraph(goal: string) {
+  //   return graphData
+  //     ?.filter((event) => event.goal === goal)
+  //     .map((event) => ({ label: event.label, value: event.value }));
+  // }
 
   useEffect(() => {
     if (!rawGoals) return;
@@ -273,20 +273,20 @@ const App = () => {
 
         data.sort((a, b) => (a.goal > b.goal ? 1 : -1));
 
-        let dataPoints = data
-          .filter((event) => event.name === "up" || event.name === "down")
-          .map((event) => {
-            const value = event.name === "up" ? 1 : -1;
+        // let dataPoints = data
+        //   .filter((event) => event.name === "up" || event.name === "down")
+        //   .map((event) => {
+        //     const value = event.name === "up" ? 1 : -1;
 
-            return {
-              goal: event.goal,
-              label: event.timestamp,
-              value: value,
-            };
-          });
+        //     return {
+        //       goal: event.goal,
+        //       label: event.timestamp,
+        //       value: value,
+        //     };
+        //   });
 
         // setEvents(data);
-        setGraphData(dataPoints);
+        // setGraphData(dataPoints);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -380,7 +380,8 @@ const App = () => {
               )}
 
               <div style={{ flexGrow: "1", width: "1%" }}>
-                <Graph goal={goal.id} xy={oneGraph(goal.id)} />
+                {goal.sum}
+                {/* <Graph goal={goal.id} xy={oneGraph(goal.id)} /> */}
               </div>
 
               {!isDone(goal) && (
